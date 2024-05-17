@@ -23,10 +23,10 @@ public class OhmsLawLab extends JFrame {
 
         // Input panel
         JPanel inputPanel = new JPanel(new GridLayout(3, 2));
-        inputPanel.add(new JLabel("Voltage (V):"));
+        inputPanel.add(new JLabel("Voltage (V):") );
         voltageField = new JTextField();
         inputPanel.add(voltageField);
-        inputPanel.add(new JLabel("Current (A):"));
+        inputPanel.add(new JLabel("Current (A):") );
         currentField = new JTextField();
         inputPanel.add(currentField);
         addButton = new JButton("Add Data");
@@ -47,19 +47,8 @@ public class OhmsLawLab extends JFrame {
         add(tableScrollPane, BorderLayout.CENTER);
         add(graphPanel, BorderLayout.SOUTH);
 
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                addData();
-            }
-        });
-
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                saveData();
-            }
-        });
+        addButton.addActionListener(e -> addData());
+        saveButton.addActionListener(e -> saveData());
     }
 
     private void addData() {
