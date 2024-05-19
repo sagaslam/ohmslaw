@@ -1,3 +1,5 @@
+
+//Ihsaan Aslam id:
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
@@ -12,73 +14,72 @@ public class OhmsLawLab extends JFrame {
     private DataTableModel tableModel;
     private GraphPanel graphPanel;
 
+    // contains the GUI components
     public OhmsLawLab() {
         setTitle("Ohm's Law Virtual Lab");
         setSize(600, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Create input components
+        // Create input components and event listeners
         JLabel labelA = new JLabel("Current (A):");
         JLabel labelV = new JLabel("Voltage (V):");
-        // JLabel labelResistance = new JLabel("Resistance (Ω):");
         currentField = new JTextField(10);
         voltageField = new JTextField(10);
         addButton = new JButton("Add");
 
-        // Create panel for input components
+        // create panel for input components and event handlers
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
-        inputPanel.add(labelV); // Add label for "V"
-        inputPanel.add(voltageField); // Add text field for "V"
+        inputPanel.add(labelV);
+        inputPanel.add(voltageField);
         inputPanel.add(labelA);
         inputPanel.add(currentField);
-
         inputPanel.add(addButton);
         inputPanel.setPreferredSize(new Dimension(600, 30));
 
-        // Table panel
+        // create table panel
         tableModel = new DataTableModel();
         dataTable = new JTable(tableModel);
         JScrollPane tableScrollPane = new JScrollPane(dataTable);
         tableScrollPane.setPreferredSize(new Dimension(600, 140));
 
-        // Graph panel
+        // create graph panel
         graphPanel = new GraphPanel();
         graphPanel.setPreferredSize(new Dimension(600, 400));
 
-        ;
-        // Create panel for save and open buttons
+        // create panel for save and open buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton saveButton = new JButton("Save");
         JButton openButton = new JButton("Open");
         buttonPanel.add(openButton);
         buttonPanel.add(saveButton);
-
         buttonPanel.setPreferredSize(new Dimension(600, 30));
 
+        // add event listeners
         addButton.addActionListener(e -> addData());
         saveButton.addActionListener(e -> saveData());
         openButton.addActionListener(e -> loadData());
 
-        // Create a main panel with BoxLayout to arrange all components vertically
+        // create a main panel with BoxLayout to arrange all components vertically
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.add(Box.createVerticalStrut(1));
         mainPanel.add(inputPanel);
-        mainPanel.add(Box.createVerticalStrut(1)); // Add vertical spacing between panels
+        mainPanel.add(Box.createVerticalStrut(1));
         mainPanel.add(tableScrollPane);
-        mainPanel.add(Box.createVerticalStrut(1)); // Add vertical spacing between panels
+        mainPanel.add(Box.createVerticalStrut(1));
         mainPanel.add(graphPanel);
-        mainPanel.add(Box.createVerticalStrut(1)); // Add vertical spacing between panels
+        mainPanel.add(Box.createVerticalStrut(1));
         mainPanel.add(buttonPanel);
 
-        // Add the main panel to the frame
+        // add the main panel to the frame
         getContentPane().add(mainPanel);
 
         setVisible(true);
 
     }
 
+    // method to add data to the table and update the graph
     private void addData() {
         try {
             double voltage = Double.parseDouble(voltageField.getText());
@@ -88,10 +89,11 @@ public class OhmsLawLab extends JFrame {
             tableModel.addData(voltage, current, resistance);
             graphPanel.updateGraph(tableModel.getData());
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Please enter valid numbers.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    // method to save data to a user selected file
     private void saveData() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File("."));
@@ -113,6 +115,7 @@ public class OhmsLawLab extends JFrame {
         }
     }
 
+    // method to load data from a selected file
     private void loadData() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(".")); // Set current directory
@@ -131,21 +134,22 @@ public class OhmsLawLab extends JFrame {
                         dataPoints.add(new DataPoint(voltage, current, resistance));
                     }
                 }
-                // tableModel.setData(dataPoints);
                 tableModel.setData(dataPoints);
                 tableModel.fireTableDataChanged();
                 graphPanel.updateGraph(dataPoints);
                 JOptionPane.showMessageDialog(this, "Data loaded successfully.", "Success",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException | NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Error loading data.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error loading file.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
+    // calculate resistance using Ohms Law V=IR
     private double calculateResistance(double voltage, double current) {
         double resistance;
         resistance = voltage / current;
+        // round to 2 decimal places
         return Math.floor(resistance * 100) / 100;
     }
 
@@ -157,6 +161,7 @@ public class OhmsLawLab extends JFrame {
     }
 }
 
+// class defining a data point with voltage, current, and resistance
 class DataPoint {
     private final double voltage;
     private final double current;
@@ -181,6 +186,7 @@ class DataPoint {
     }
 }
 
+// class for adding and displaying data to a table
 class DataTableModel extends AbstractTableModel {
     private final String[] columnNames = { "Voltage (V)", "Current (A)", "Resistance (Ω)" };
     private ArrayList<DataPoint> data = new ArrayList<>();
@@ -229,6 +235,7 @@ class DataTableModel extends AbstractTableModel {
     }
 }
 
+// class to show graph
 class GraphPanel extends JPanel {
     private ArrayList<DataPoint> data;
 
@@ -253,27 +260,27 @@ class GraphPanel extends JPanel {
         int padding = 50;
         int labelPadding = 20;
 
-        // Calculate maximum values for scaling
+        // calculate maximum values for scaling
         double maxVoltage = data.stream().mapToDouble(DataPoint::getVoltage).max().orElse(1);
         double maxCurrent = data.stream().mapToDouble(DataPoint::getCurrent).max().orElse(1);
 
-        // Draw white background
+        // draw white background
         g2.setColor(Color.WHITE);
         g2.fillRect(padding, padding, width - 2 * padding, height - 2 * padding);
         g2.setColor(Color.BLACK);
 
-        // Draw ticks and grid lines on X axis
+        // draw ticks and grid lines on X axis
         int xTicks = (int) maxVoltage;
         int xTickSpacing = (width - 100) / xTicks;
         for (int i = 0; i <= xTicks; i++) {
             int x = 50 + i * xTickSpacing;
-            g2.drawLine(x, height - 50, x, height - 45); // Short tick
-            g2.drawString(String.valueOf(i), x - 5, height - 30); // Tick label
+            g2.drawLine(x, height - 50, x, height - 45);
+            g2.drawString(String.valueOf(i), x - 5, height - 30);
 
             // Draw vertical grid lines
             g2.setColor(Color.LIGHT_GRAY);
             g2.drawLine(x, height - 50, x, 50);
-            g2.setColor(Color.BLACK); // Reset color for next tick
+            g2.setColor(Color.BLACK);
         }
 
         // Draw ticks and grid lines on Y axis
@@ -281,41 +288,39 @@ class GraphPanel extends JPanel {
         int yTickSpacing = (height - 100) / yTicks;
         for (int i = 0; i <= yTicks; i++) {
             int y = height - 50 - i * yTickSpacing;
-            g2.drawLine(50, y, 55, y); // Short tick
-            g2.drawString(String.valueOf(i), 30, y + 5); // Tick label
+            g2.drawLine(50, y, 55, y);
+            g2.drawString(String.valueOf(i), 30, y + 5);
 
             // Draw horizontal grid lines
             g2.setColor(Color.LIGHT_GRAY);
             g2.drawLine(50, y, width - 50, y);
-            g2.setColor(Color.BLACK); // Reset color for next tick
+            g2.setColor(Color.BLACK);
         }
 
-        //
-
-        // Draw axes
+        // draw axes
         g2.drawLine(padding, height - padding, padding, padding);
         g2.drawLine(padding, height - padding, width - padding, height - padding);
 
-        // Draw labels
-
-        // Draw labels
         g2.drawString("Voltage (V)", (width / 2) - 32, height - labelPadding + 6);
 
+        // rotate 'Current' vertically
         g2.rotate(-Math.PI / 2);
-        g2.drawString("Current (A)", (-height / 2) - 24, labelPadding - 4); // y-axis label
-        g2.rotate(Math.PI / 2); // Reset rotation
+        g2.drawString("Current (A)", (-height / 2) - 24, labelPadding - 4);
+        g2.rotate(Math.PI / 2);
 
-        // Draw data points and lines
+        // draw data points and lines
         int pointRadius = 5;
         for (int i = 0; i < data.size(); i++) {
             DataPoint dp = data.get(i);
             int x = (int) (padding + dp.getVoltage() / maxVoltage * (width - 2.1 * padding));
             int y = (int) (height - padding - dp.getCurrent() / maxCurrent * (height - 2.1 * padding));
+            g2.setColor(Color.RED);
             g2.fillOval(x - pointRadius, y - pointRadius, pointRadius * 2, pointRadius * 2);
             if (i > 0) {
                 DataPoint prev = data.get(i - 1);
                 int prevX = (int) (padding + prev.getVoltage() / maxVoltage * (width - 2.1 * padding));
                 int prevY = (int) (height - padding - prev.getCurrent() / maxCurrent * (height - 2.1 * padding));
+                g2.setColor(Color.BLACK);
                 g2.drawLine(prevX, prevY, x, y);
             }
         }
