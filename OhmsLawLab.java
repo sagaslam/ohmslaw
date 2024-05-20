@@ -1,5 +1,5 @@
 
-//Ihsaan Aslam id:
+//Ihsaan Aslam H00399721
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -277,7 +277,7 @@ class GraphPanel extends JPanel {
         g2.setColor(Color.BLACK);
 
         // draw ticks and grid lines on X axis
-        int xTicks = (int) maxVoltage;
+        int xTicks = (int) Math.ceil(maxVoltage);
         int xTickSpacing = (width - 100) / xTicks;
         for (int i = 0; i <= xTicks; i++) {
             int x = 50 + i * xTickSpacing;
@@ -291,7 +291,7 @@ class GraphPanel extends JPanel {
         }
 
         // Draw ticks and grid lines on Y axis
-        int yTicks = (int) maxCurrent;
+        int yTicks = (int) Math.ceil(maxCurrent);
         int yTickSpacing = (height - 100) / yTicks;
         for (int i = 0; i <= yTicks; i++) {
             int y = height - 50 - i * yTickSpacing;
@@ -319,8 +319,9 @@ class GraphPanel extends JPanel {
         int pointRadius = 5;
         for (int i = 0; i < data.size(); i++) {
             DataPoint dp = data.get(i);
-            int x = (int) (padding + dp.getVoltage() / maxVoltage * (width - 2.1 * padding));
-            int y = (int) (height - padding - dp.getCurrent() / maxCurrent * (height - 2.1 * padding));
+            int x = (int) (padding + dp.getVoltage() / ((maxVoltage <= 1) ? 1 : maxVoltage) * (width - 2.1 * padding));
+            int y = (int) (height - padding
+                    - dp.getCurrent() / ((maxCurrent <= 1) ? 1 : maxCurrent) * (height - 2.1 * padding));
             g2.setColor(Color.RED);
             g2.fillOval(x - pointRadius, y - pointRadius, pointRadius * 2, pointRadius * 2);
             if (i > 0) {
