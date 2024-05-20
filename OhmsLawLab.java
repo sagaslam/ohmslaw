@@ -1,5 +1,6 @@
 
 //Ihsaan Aslam id:
+
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
@@ -49,13 +50,16 @@ public class OhmsLawLab extends JFrame {
 
         // create panel for save and open buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton saveButton = new JButton("Save");
+        JButton resetButton = new JButton("Reset");
         JButton openButton = new JButton("Open");
+        JButton saveButton = new JButton("Save");
+        buttonPanel.add(resetButton);
         buttonPanel.add(openButton);
         buttonPanel.add(saveButton);
         buttonPanel.setPreferredSize(new Dimension(600, 30));
 
         // add event listeners
+        resetButton.addActionListener(e -> resetData());
         addButton.addActionListener(e -> addData());
         saveButton.addActionListener(e -> saveData());
         openButton.addActionListener(e -> loadData());
@@ -84,13 +88,19 @@ public class OhmsLawLab extends JFrame {
         try {
             double voltage = Double.parseDouble(voltageField.getText());
             double current = Double.parseDouble(currentField.getText());
-            double resistance = calculateResistance(voltage, current);
+            // double resistance = calculateResistance(voltage, current);
 
-            tableModel.addData(voltage, current, resistance);
+            tableModel.addData(voltage, current);
             graphPanel.updateGraph(tableModel.getData());
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    // method to clear the data
+    private void resetData() {
+        tableModel.clearData();
+        graphPanel.updateGraph(tableModel.getData());
     }
 
     // method to save data to a user selected file
@@ -105,7 +115,7 @@ public class OhmsLawLab extends JFrame {
             }
             try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
                 for (DataPoint dp : tableModel.getData()) {
-                    writer.println(dp.getVoltage() + "," + dp.getCurrent() + "," + dp.getResistance());
+                    writer.println(dp.getVoltage() + "," + dp.getCurrent());
                 }
                 JOptionPane.showMessageDialog(this, "File saved successfully.", "Success",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -127,11 +137,11 @@ public class OhmsLawLab extends JFrame {
                 ArrayList<DataPoint> dataPoints = new ArrayList<>();
                 while ((line = reader.readLine()) != null) {
                     String[] parts = line.split(",");
-                    if (parts.length == 3) {
+                    if (parts.length == 2) {
                         double voltage = Double.parseDouble(parts[0]);
                         double current = Double.parseDouble(parts[1]);
-                        double resistance = Double.parseDouble(parts[2]);
-                        dataPoints.add(new DataPoint(voltage, current, resistance));
+                        // double resistance = Double.parseDouble(parts[2]);
+                        dataPoints.add(new DataPoint(voltage, current));
                     }
                 }
                 tableModel.setData(dataPoints);
@@ -143,14 +153,6 @@ public class OhmsLawLab extends JFrame {
                 JOptionPane.showMessageDialog(this, "Error loading file.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
-    }
-
-    // calculate resistance using Ohms Law V=IR
-    private double calculateResistance(double voltage, double current) {
-        double resistance;
-        resistance = voltage / current;
-        // round to 2 decimal places
-        return Math.floor(resistance * 100) / 100;
     }
 
     public static void main(String[] args) {
@@ -165,12 +167,11 @@ public class OhmsLawLab extends JFrame {
 class DataPoint {
     private final double voltage;
     private final double current;
-    private final double resistance;
 
-    public DataPoint(double voltage, double current, double resistance) {
+    public DataPoint(double voltage, double current) {
         this.voltage = voltage;
         this.current = current;
-        this.resistance = resistance;
+
     }
 
     public double getVoltage() {
@@ -182,8 +183,9 @@ class DataPoint {
     }
 
     public double getResistance() {
-        return resistance;
+        return Math.floor(voltage / current * 100) / 100; // calculate resistance using Ohms Law V=IR
     }
+
 }
 
 // class for adding and displaying data to a table
@@ -191,8 +193,8 @@ class DataTableModel extends AbstractTableModel {
     private final String[] columnNames = { "Voltage (V)", "Current (A)", "Resistance (Ω)" };
     private ArrayList<DataPoint> data = new ArrayList<>();
 
-    public void addData(double voltage, double current, double resistance) {
-        data.add(new DataPoint(voltage, current, resistance));
+    public void addData(double voltage, double current) {
+        data.add(new DataPoint(voltage, current));
         fireTableRowsInserted(data.size() - 1, data.size() - 1);
     }
 
@@ -202,6 +204,11 @@ class DataTableModel extends AbstractTableModel {
 
     public void setData(ArrayList<DataPoint> newArrayList) {
         data = newArrayList;
+    }
+
+    public void clearData() {
+        data.clear();
+        fireTableDataChanged();
     }
 
     @Override
