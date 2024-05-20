@@ -171,7 +171,6 @@ class DataPoint {
     public DataPoint(double voltage, double current) {
         this.voltage = voltage;
         this.current = current;
-
     }
 
     public double getVoltage() {
@@ -284,7 +283,7 @@ class GraphPanel extends JPanel {
             g2.drawLine(x, height - 50, x, height - 45);
             g2.drawString(String.valueOf(i), x - 5, height - 30);
 
-            // Draw vertical grid lines
+            // draw vertical grid lines
             g2.setColor(Color.LIGHT_GRAY);
             g2.drawLine(x, height - 50, x, 50);
             g2.setColor(Color.BLACK);
@@ -326,11 +325,15 @@ class GraphPanel extends JPanel {
             g2.fillOval(x - pointRadius, y - pointRadius, pointRadius * 2, pointRadius * 2);
             if (i > 0) {
                 DataPoint prev = data.get(i - 1);
-                int prevX = (int) (padding + prev.getVoltage() / maxVoltage * (width - 2.1 * padding));
-                int prevY = (int) (height - padding - prev.getCurrent() / maxCurrent * (height - 2.1 * padding));
+                int prevX = (int) (padding
+                        + prev.getVoltage() / ((maxVoltage <= 1) ? 1 : maxVoltage) * (width - 2.1 * padding));
+                int prevY = (int) (height - padding
+                        - prev.getCurrent() / ((maxCurrent <= 1) ? 1 : maxCurrent) * (height - 2.1 * padding));
                 g2.setColor(Color.BLACK);
                 g2.drawLine(prevX, prevY, x, y);
             }
         }
+
     }
+
 }
