@@ -335,5 +335,4 @@ class GraphPanel extends JPanel {
         }
 
     }
-
 }
