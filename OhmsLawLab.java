@@ -88,7 +88,6 @@ public class OhmsLawLab extends JFrame {
         try {
             double voltage = Double.parseDouble(voltageField.getText());
             double current = Double.parseDouble(currentField.getText());
-            // double resistance = calculateResistance(voltage, current);
 
             tableModel.addData(voltage, current);
             graphPanel.updateGraph(tableModel.getData());
